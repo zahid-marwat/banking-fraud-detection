@@ -16,15 +16,11 @@ class DataLoader:
     """
     
     REQUIRED_COLUMNS = {
-        'income', 'loan_amount', 'credit_score', 'employment_years',
-        'age', 'education_level', 'marital_status', 'fraud_label'
+        'income', 'loan_amount', 'credit_score', 'employment_years', 'fraud_label'
     }
-    
-    NUMERICAL_FEATURES = [
-        'income', 'loan_amount', 'credit_score', 'employment_years', 'age'
-    ]
-    
-    CATEGORICAL_FEATURES = ['education_level', 'marital_status']
+
+    OPTIONAL_NUMERICAL_FEATURES = ['age', 'dti']
+    OPTIONAL_CATEGORICAL_FEATURES = ['education_level', 'marital_status']
     
     def __init__(self, data_path: str):
         """
@@ -88,7 +84,10 @@ class DataLoader:
             raise ValueError(f"fraud_label must be binary (0 or 1), found: {fraud_values}")
         
         # Validate numerical features are numeric
-        for col in self.NUMERICAL_FEATURES:
+        numerical_cols = list(self.REQUIRED_COLUMNS - {'fraud_label'}) + [
+            col for col in self.OPTIONAL_NUMERICAL_FEATURES if col in self.data.columns
+        ]
+        for col in numerical_cols:
             if not pd.api.types.is_numeric_dtype(self.data[col]):
                 raise ValueError(f"Column {col} must be numeric")
     

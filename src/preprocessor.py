@@ -242,7 +242,7 @@ class FeatureEngineer:
             bins=[0, 100000, 250000, 500000, np.inf],
             labels=[0, 1, 2, 3]
         )
-        return loan_categories.astype(int)
+        return loan_categories.astype('Int64').fillna(-1).astype(int)
     
     @staticmethod
     def create_income_category(X: pd.DataFrame) -> pd.Series:
@@ -262,7 +262,7 @@ class FeatureEngineer:
             bins=[0, 50000, 100000, 150000, np.inf],
             labels=[0, 1, 2, 3]
         )
-        return income_categories.astype(int)
+        return income_categories.astype('Int64').fillna(-1).astype(int)
     
     @classmethod
     def engineer_features(cls, X: pd.DataFrame) -> pd.DataFrame:
@@ -277,12 +277,19 @@ class FeatureEngineer:
         """
         X_engineered = X.copy()
         
-        # Create new features
-        X_engineered['income_to_loan_ratio'] = cls.create_income_to_loan_ratio(X)
-        X_engineered['credit_history_score'] = cls.create_credit_history_score(X)
-        X_engineered['employment_stability'] = cls.create_employment_stability(X)
-        X_engineered['age_credit_interaction'] = cls.create_age_credit_interaction(X)
-        X_engineered['loan_amount_category'] = cls.create_loan_amount_category(X)
-        X_engineered['income_category'] = cls.create_income_category(X)
+        # Create new features (only if required columns exist)
+        if {'income', 'loan_amount'}.issubset(X.columns):
+            X_engineered['income_to_loan_ratio'] = cls.create_income_to_loan_ratio(X)
+            X_engineered['loan_amount_category'] = cls.create_loan_amount_category(X)
+            X_engineered['income_category'] = cls.create_income_category(X)
+
+        if 'credit_score' in X.columns:
+            X_engineered['credit_history_score'] = cls.create_credit_history_score(X)
+
+        if 'employment_years' in X.columns:
+            X_engineered['employment_stability'] = cls.create_employment_stability(X)
+
+        if {'age', 'credit_score'}.issubset(X.columns):
+            X_engineered['age_credit_interaction'] = cls.create_age_credit_interaction(X)
         
         return X_engineered

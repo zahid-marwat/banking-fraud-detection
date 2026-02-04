@@ -27,20 +27,17 @@ banking-fraud-detection/
 ├── src/
 │   ├── __init__.py
 │   ├── config.py               # Configuration parameters
-│   ├── data/
-│   │   ├── __init__.py
-│   │   ├── data_loader.py      # Data loading & validation
-│   │   └── preprocessor.py     # Data preprocessing & feature engineering
-│   └── models/
-│       ├── __init__.py
-│       ├── trainer.py          # Model training pipeline
-│       ├── evaluator.py        # Model evaluation & metrics
-│       └── predict.py          # Prediction on new data
-├── models/                     # Trained model checkpoints
+│   ├── data_loader.py          # Data loading & validation
+│   ├── preprocessor.py         # Data preprocessing & feature engineering
+│   ├── trainer.py              # Model training pipeline
+│   ├── evaluator.py            # Model evaluation & metrics
+│   └── predict.py              # Prediction on new data
+├── models/                     # Trained model checkpoints + evaluation_results.json
 ├── tests/
 │   ├── __init__.py
 │   ├── test_preprocessor.py    # Data preprocessing tests
 │   └── test_models.py          # Model functionality tests
+├── run_pipeline.py             # End-to-end processing + training
 ├── requirements.txt            # Dependencies
 ├── requirements-dev.txt        # Development dependencies
 └── README.md                   # Project documentation
@@ -89,8 +86,8 @@ jupyter notebook notebooks/
 
 ### Training Models
 ```python
-from src.models.trainer import ModelTrainer
-from src.data.data_loader import DataLoader
+from src.trainer import ModelTrainer
+from src.data_loader import DataLoader
 
 # Load data
 loader = DataLoader('data/raw/loan_applications.csv')
@@ -106,7 +103,7 @@ evaluator = trainer.evaluate_models(models, X_test, y_test)
 
 ### Making Predictions
 ```python
-from src.models.predict import FraudPredictor
+from src.predict import FraudPredictor
 
 predictor = FraudPredictor('models/best_model.joblib')
 new_applications = [
@@ -125,8 +122,86 @@ predictions = predictor.predict(new_applications)
 
 Expected CSV with loan application features:
 ```
-income, loan_amount, credit_score, employment_years, 
-age, education_level, marital_status, fraud_label
+income, loan_amount, credit_score, employment_years, dti, fraud_label
+```
+
+## Dataset Processing (LendingClub)
+
+This project processes the raw LendingClub accepted dataset into a clean, model-ready format:
+
+- **Raw source**: `data/raw/accepted_2007_to_2018Q4.csv`
+- **Processed output**: `data/processed/loan_applications_processed.csv`
+
+### Fraud Label Definition
+
+We label **fraud-like outcomes** using loan status:
+
+```
+fraud_label = 1 if loan_status in {
+    "Charged Off", "Default", "Late (31-120 days)", "Late (16-30 days)",
+    "Does not meet the credit policy. Status:Charged Off"
+}
+else 0
+```
+
+### Feature Mapping
+
+- `income` ← `annual_inc`
+- `loan_amount` ← `loan_amnt`
+- `credit_score` ← average of `fico_range_low` and `fico_range_high`
+- `employment_years` ← parsed from `emp_length`
+- `dti` ← `dti`
+
+### Run the Full Pipeline
+
+```bash
+python run_pipeline.py
+```
+
+This will:
+1. Process the raw dataset
+2. Engineer features
+3. Train models with SMOTE
+4. Save evaluation results to `models/evaluation_results.json`
+
+## Latest Evaluation Results (Processed Dataset)
+
+**Dataset summary**:
+- Samples: **187,061**
+- Fraud rate: **12.92%**
+- Features used: **10**
+
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC | Specificity | FPR |
+|------|----------|-----------|--------|----|---------|------------|-----|
+| Logistic Regression | 0.5488 | 0.1762 | 0.6780 | 0.2797 | 0.6424 | 0.5296 | 0.4704 |
+| Random Forest | 0.7326 | 0.2103 | 0.3880 | 0.2728 | 0.6393 | 0.7837 | 0.2163 |
+| XGBoost | 0.7919 | 0.2217 | 0.2430 | 0.2319 | 0.6335 | 0.8734 | 0.1266 |
+
+### Example: Processed Row
+
+```
+income: 72000.0
+loan_amount: 15000.0
+credit_score: 695.0
+employment_years: 5.0
+dti: 15.42
+income_to_loan_ratio: 4.80
+credit_history_score: 0.718
+employment_stability: 0.167
+loan_amount_category: 0
+income_category: 1
+fraud_label: 0
+```
+
+### Example: Prediction Output
+
+```json
+{
+    "prediction": 1,
+    "is_fraud": true,
+    "fraud_probability": 0.64,
+    "risk_level": "high"
+}
 ```
 
 ## Model Performance
@@ -143,8 +218,8 @@ Models are evaluated on:
 - **Income-to-Loan Ratio**: Debt burden indicator
 - **Credit History Score**: Payment reliability
 - **Employment Stability**: Job continuity indicator
-- **Age-Credit Score Interaction**: Risk profile
-- **Categorical Encoding**: One-hot and target encoding
+- **Loan Amount & Income Categories**: Risk tiers for discretized inputs
+- **Categorical Encoding**: One-hot encoding when categorical features are present
 
 ## Handling Class Imbalance
 

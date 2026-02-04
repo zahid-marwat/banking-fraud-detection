@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "total_samples": 187061,
+    "fraud_rate": 0.12923591769529724,
+    "features_used": [
+      "income",
+      "loan_amount",
+      "credit_score",
+      "employment_years",
+      "dti",
+      "income_to_loan_ratio",
+      "loan_amount_category",
+      "income_category",
+      "credit_history_score",
+      "employment_stability"
+    ]
+  },
+  "results": {
+    "logistic_regression": {
+      "accuracy": 0.5487664715473232,
+      "precision": 0.17620813847228942,
+      "recall": 0.6779731127197518,
+      "f1": 0.27971669937707994,
+      "roc_auc": 0.6424107843188914,
+      "true_negatives": 17253,
+      "false_positives": 15325,
+      "false_negatives": 1557,
+      "true_positives": 3278,
+      "specificity": 0.529590521210633,
+      "false_positive_rate": 0.47040947878936706,
+      "fraud_detection_rate": 0.6779731127197518
+    },
+    "random_forest": {
+      "accuracy": 0.7326063133135541,
+      "precision": 0.21029032619661472,
+      "recall": 0.38800413650465354,
+      "f1": 0.2727537074731026,
+      "roc_auc": 0.6392979909231289,
+      "true_negatives": 25533,
+      "false_positives": 7045,
+      "false_negatives": 2959,
+      "true_positives": 1876,
+      "specificity": 0.7837497697832894,
+      "false_positive_rate": 0.21625023021671066,
+      "fraud_detection_rate": 0.38800413650465354
+    },
+    "xgboost": {
+      "accuracy": 0.7919172480153958,
+      "precision": 0.22169811320754718,
+      "recall": 0.24301964839710444,
+      "f1": 0.23186975826344353,
+      "roc_auc": 0.6334863752021003,
+      "true_negatives": 28453,
+      "false_positives": 4125,
+      "false_negatives": 3660,
+      "true_positives": 1175,
+      "specificity": 0.873380809134999,
+      "false_positive_rate": 0.12661919086500092,
+      "fraud_detection_rate": 0.24301964839710444
+    }
+  }
+}
