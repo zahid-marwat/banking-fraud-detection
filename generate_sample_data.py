@@ -85,7 +85,7 @@ def generate_sample_data(
     
     df.to_csv(output_path, index=False)
     
-    print(f"✓ Sample data generated successfully!")
+    print("Sample data generated successfully.")
     print(f"  Samples: {len(df)}")
     print(f"  Features: {len(df.columns) - 1}")
     print(f"  Fraud rate: {fraud_label.mean()*100:.1f}%")

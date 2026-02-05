@@ -87,33 +87,33 @@ QUICK_START = """
 # ============================================================================
 
 KEY_FEATURES = """
-✓ MULTIPLE MODELS:
+MULTIPLE MODELS:
   - Logistic Regression (interpretability)
   - Random Forest (non-linear patterns)
   - XGBoost (gradient boosting)
   - Ensemble methods (robustness)
 
-✓ CLASS IMBALANCE HANDLING:
+CLASS IMBALANCE HANDLING:
   - SMOTE (Synthetic Minority Oversampling)
   - Class weights in model training
   - Stratified cross-validation
   - Appropriate evaluation metrics
 
-✓ FEATURE ENGINEERING:
+FEATURE ENGINEERING:
   - Income-to-loan ratio (debt burden)
   - Credit history score (payment reliability)
   - Employment stability indicator
   - Age-credit score interaction
   - Categorical discretization
 
-✓ COMPREHENSIVE EVALUATION:
+COMPREHENSIVE EVALUATION:
   - Precision, Recall, F1-Score
   - ROC-AUC curve
   - Precision-Recall curve
   - Confusion matrix analysis
   - Business-focused metrics
 
-✓ PRODUCTION-READY CODE:
+PRODUCTION-READY CODE:
   - Type hints on all functions
   - Comprehensive docstrings
   - Error handling
@@ -165,10 +165,10 @@ income=75000, loan_amount=250000, credit_score=720, employment_years=5,
 age=45, education_level=Bachelor, marital_status=Married, fraud_label=0
 
 Data Quality Checks:
-✓ No NULL values in fraud_label
-✓ Numerical features are actually numeric
-✓ fraud_label contains only 0 and 1
-✓ No duplicate records (checked and reported)
+- No NULL values in fraud_label
+- Numerical features are numeric
+- fraud_label contains only 0 and 1
+- No duplicate records (checked and reported)
 """
 
 # ============================================================================
@@ -373,7 +373,7 @@ if __name__ == '__main__':
         print(content)
     
     print("\n" + "="*70)
-    print("✓ PROJECT SETUP COMPLETE!")
+   print("PROJECT SETUP COMPLETE.")
     print("="*70)
     print("\nNext Steps:")
     print("1. Install dependencies: pip install -r requirements.txt")
